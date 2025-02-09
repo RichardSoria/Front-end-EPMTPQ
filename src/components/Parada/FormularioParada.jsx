@@ -1,202 +1,195 @@
-import { useContext, useState, useEffect } from "react";
-import { useParams } from "react-router-dom"; // 🔹 Importar useParams para obtener el ID del corredor
-import ParadaContext from "../../context/ParadaProvider";
+import { useState, useEffect, useContext } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 import Mensaje from "../Alertas/Mensaje";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faPen, faCheck, faMinus } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
+import ParadaContext from "../../context/ParadaProvider";
 
 export const FormularioParada = () => {
-    const { paradaSeleccionada, setParadaSeleccionada, listarParadas } = useContext(ParadaContext);
-    const { id: corredorId } = useParams(); // 🔹 Obtener el ID del corredor desde la URL
+    const { paradaSeleccionada, listarParadas } = useContext(ParadaContext);
+    const { id: corredorId } = useParams();
+
     const [mensaje, setMensaje] = useState({});
     const [form, setForm] = useState({
         nombre: "",
         tipo: "",
         ubicacion: "",
+        _id: ""
     });
 
-    // ✅ Llenar el formulario automáticamente si hay una parada seleccionada
     useEffect(() => {
         if (paradaSeleccionada) {
-            setForm({
-                nombre: paradaSeleccionada.nombre ?? "",
-                tipo: paradaSeleccionada.tipo ?? "",
-                ubicacion: paradaSeleccionada.ubicacion ?? "",
-            });
+            setForm(paradaSeleccionada);
         } else {
             resetForm();
         }
     }, [paradaSeleccionada]);
 
     const resetForm = () => {
-        setForm({ nombre: "", tipo: "", ubicacion: "" });
-        setParadaSeleccionada(null);
+        setForm({
+            nombre: "",
+            tipo: "",
+            ubicacion: "",
+            _id: ""
+        });
     };
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (e, action) => {
+    const handleAgregar = async (e) => {
         e.preventDefault();
-
-        if (Object.values(form).some((input) => input === "")) {
-            setMensaje({ respuesta: "Todos los campos son requeridos.", tipo: false });
-            setTimeout(() => setMensaje({}), 3000);
-            return;
-        }
-
-        if (!paradaSeleccionada && action !== "agregar") {
-            setMensaje({ respuesta: "Seleccione una parada para continuar.", tipo: false });
-            setTimeout(() => setMensaje({}), 3000);
-            return;
-        }
-
-        if (!confirm(`¿Está seguro de ${action} la parada?`)) return;
-
         try {
-            const token = localStorage.getItem("token");
-            const baseUrl = `${import.meta.env.VITE_BACKEND_URL}/parada`;
+            const confirmacion = window.confirm("¿Estás seguro de agregar esta parada?");
+            if (confirmacion) {
+                const token = localStorage.getItem("token");
+                const url = `${import.meta.env.VITE_BACKEND_URL}/parada/registro`;
+                const options = {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                };
 
-            const headers = { headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` } };
+                const formCrear = { ...form, corredor: corredorId };
+                delete formCrear._id;
 
-            const id = paradaSeleccionada?._id;
-
-            console.log("🟢 ID del corredor obtenido de la URL:", corredorId); // 🔹 Verifica en la consola si el ID es correcto
-
-            // ✅ Asegurar que el `corredor` se asigna correctamente
-            const paradaData = {
-                ...form,
-                corredor: corredorId, // 🔹 Se asigna automáticamente el ID del corredor desde la URL
-            };
-
-            const endpoints = {
-                agregar: { url: `${baseUrl}/registro`, method: "post" },
-                actualizar: { url: `${baseUrl}/${id}`, method: "put" },
-                activar: { url: `${baseUrl}/activar/${id}`, method: "put" },
-                desactivar: { url: `${baseUrl}/desactivar/${id}`, method: "put" },
-            };
-
-            await axios[endpoints[action].method](endpoints[action].url, paradaData, headers);
-
-            listarParadas();
-            resetForm();
-            setMensaje({ respuesta: `Parada "${form.nombre}" ${action} con éxito.`, tipo: true });
-            setTimeout(() => setMensaje({}), 3000);
-        } catch (error) {
-            console.log("⚠️ Error en la solicitud:", error.response);
-
-            if (error.response?.status === 400 && error.response.data.msg.includes("ya existe")) {
-                setMensaje({ respuesta: error.response.data.msg, tipo: false });
-            } else {
-                setMensaje({ respuesta: error.response?.data?.msg || `Error al ${action}.`, tipo: false });
+                await axios.post(url, formCrear, options);
+                listarParadas();
+                resetForm();
+                setMensaje({ respuesta: "Parada registrada con éxito.", tipo: true });
+                setTimeout(() => setMensaje({}), 3000);
             }
-
+        } catch (error) {
+            setMensaje({ respuesta: error.response.data.msg, tipo: false });
             setTimeout(() => setMensaje({}), 3000);
         }
     };
 
+    const handleActualizar = async (e) => {
+        e.preventDefault();
+        if (!paradaSeleccionada) {
+            setMensaje({ respuesta: "Seleccione una parada para actualizar.", tipo: false });
+            setTimeout(() => setMensaje({}), 3000);
+            return;
+        }
+        try {
+            const confirmacion = window.confirm("¿Estás seguro de actualizar esta parada?");
+            if (confirmacion) {
+                const token = localStorage.getItem("token");
+                const url = `${import.meta.env.VITE_BACKEND_URL}/parada/${paradaSeleccionada._id}`;
+                const options = {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                };
+                await axios.put(url, form, options);
+                listarParadas();
+                resetForm();
+                setMensaje({ respuesta: "Parada actualizada con éxito.", tipo: true });
+                setTimeout(() => setMensaje({}), 3000);
+            }
+        } catch (error) {
+            setMensaje({ respuesta: error.response.data.msg, tipo: false });
+            setTimeout(() => setMensaje({}), 3000);
+        }
+    };
+
+    const handleActivar = async (e) => {
+        e.preventDefault();
+        if (!paradaSeleccionada) {
+            setMensaje({ respuesta: "Seleccione una parada para activar.", tipo: false });
+        } else if (paradaSeleccionada.status) {
+            setMensaje({ respuesta: "La parada ya está activada.", tipo: false });
+        } else {
+            const confirmacion = window.confirm("¿Estás seguro de activar esta parada?");
+            if (confirmacion) {
+                try {
+                    const token = localStorage.getItem("token");
+                    const url = `${import.meta.env.VITE_BACKEND_URL}/parada/habilitar/${paradaSeleccionada._id}`;
+                    const options = {
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                        },
+                    };
+                    
+                    await axios.put(url, {}, options);
+                    listarParadas();
+                    resetForm();
+                    setMensaje({ respuesta: "Parada activada con éxito.", tipo: true });
+                } catch (error) {
+                    setMensaje({ respuesta: error.response.data.msg, tipo: false });
+                }
+            }
+        }
+        setTimeout(() => setMensaje({}), 3000);
+    };
+
+    const handleDesactivar = async (e) => {
+        e.preventDefault();
+        if (!paradaSeleccionada) {
+            setMensaje({ respuesta: "Seleccione una parada para deshabilitar.", tipo: false });
+        } else if (!paradaSeleccionada.status) {
+            setMensaje({ respuesta: "La parada ya está desactivada.", tipo: false });
+        } else {
+            const confirmacion = window.confirm("¿Estás seguro de deshabilitar esta parada?");
+            if (confirmacion) {
+                try {
+                    const token = localStorage.getItem("token");
+                    const url = `${import.meta.env.VITE_BACKEND_URL}/parada/deshabilitar/${paradaSeleccionada._id}`;
+                    const options = {
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                        },
+                    };
+                    await axios.put(url, {}, options);
+                    listarParadas();
+                    resetForm();
+                    setMensaje({ respuesta: "Parada deshabilitada con éxito.", tipo: true });
+                } catch (error) {
+                    setMensaje({ respuesta: error.response.data.msg, tipo: false });
+                }
+            }
+        }
+        setTimeout(() => setMensaje({}), 3000);
+    };
+
     return (
         <form className="shadow-2xl rounded-lg p-6 bg-white max-w-2xl mx-auto">
-            {/* ✅ Mostrar mensaje de éxito o error */}
             {Object.keys(mensaje).length > 0 && <Mensaje tipo={mensaje.tipo}>{mensaje.respuesta}</Mensaje>}
 
-            {/* ✅ Campos del formulario con el ID de la parada junto a "Ubicación" */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="mb-4">
-                    <label htmlFor="nombre" className="text-gray-700 uppercase font-bold text-sm">
-                        Nombre:
-                    </label>
-                    <input
-                        id="nombre"
-                        type="text"
-                        className="border-2 w-full p-3 mt-1 placeholder-gray-400 rounded-md focus:ring-2 focus:ring-custom-blue"
-                        placeholder="Ingrese nombre"
-                        name="nombre"
-                        value={form.nombre}
-                        onChange={handleChange}
-                    />
+                    <label className="text-gray-700 uppercase font-bold text-sm">Nombre:</label>
+                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md" name="nombre" value={form.nombre} onChange={handleChange} />
                 </div>
 
                 <div className="mb-4">
-                    <label htmlFor="tipo" className="text-gray-700 uppercase font-bold text-sm">
-                        Tipo:
-                    </label>
-                    <input
-                        id="tipo"
-                        type="text"
-                        className="border-2 w-full p-3 mt-1 placeholder-gray-400 rounded-md focus:ring-2 focus:ring-custom-blue"
-                        placeholder="Ingrese tipo"
-                        name="tipo"
-                        value={form.tipo}
-                        onChange={handleChange}
-                    />
-                </div>
-
-                {/* 🔹 Ubicación y ID de la parada en la misma fila */}
-                <div className="mb-4">
-                    <label htmlFor="ubicacion" className="text-gray-700 uppercase font-bold text-sm">
-                        Ubicación:
-                    </label>
-                    <input
-                        id="ubicacion"
-                        type="text"
-                        className="border-2 w-full p-3 mt-1 placeholder-gray-400 rounded-md focus:ring-2 focus:ring-custom-blue"
-                        placeholder="Ingrese ubicación"
-                        name="ubicacion"
-                        value={form.ubicacion}
-                        onChange={handleChange}
-                    />
+                    <label className="text-gray-700 uppercase font-bold text-sm">Tipo:</label>
+                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md" name="tipo" value={form.tipo} onChange={handleChange} />
                 </div>
 
                 <div className="mb-4">
-                    <label htmlFor="paradaId" className="text-gray-700 uppercase font-bold text-sm">
-                        ID de Parada:
-                    </label>
-                    <input
-                        id="paradaId"
-                        type="text"
-                        className="border-2 w-full p-3 mt-1 rounded-md bg-gray-200 cursor-not-allowed"
-                        value={paradaSeleccionada?._id || "No seleccionado"}
-                        disabled // 🔹 Solo visible, no editable
-                    />
+                    <label className="text-gray-700 uppercase font-bold text-sm">Ubicación:</label>
+                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md" name="ubicacion" value={form.ubicacion} onChange={handleChange} />
+                </div>
+
+                <div className="mb-4">
+                    <label className="text-gray-700 uppercase font-bold text-sm">ID de Parada:</label>
+                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md bg-gray-200 text-gray-500 cursor-not-allowed" name="_id" value={form._id} onChange={handleChange} readOnly />
                 </div>
             </div>
 
-            {/* ✅ Botones de acción organizados en 2x2 */}
             <div className="grid grid-cols-2 gap-4 mt-6">
-                <button
-                    className="bg-custom-blue w-full p-3 text-white font-bold rounded-lg hover:bg-custom-dark-blue transition-all flex items-center justify-center gap-2"
-                    onClick={(e) => handleSubmit(e, "agregar")}
-                >
-                    <FontAwesomeIcon icon={faPlus} />
-                    Agregar
-                </button>
-
-                <button
-                    className="bg-custom-yellow w-full p-3 text-white font-bold rounded-lg hover:bg-custom-dark-yellow transition-all flex items-center justify-center gap-2"
-                    onClick={(e) => handleSubmit(e, "actualizar")}
-                >
-                    <FontAwesomeIcon icon={faPen} />
-                    Actualizar
-                </button>
-
-                <button
-                    className="bg-green-600 w-full p-3 text-white font-bold rounded-lg hover:bg-custom-dark-green transition-all flex items-center justify-center gap-2"
-                    onClick={(e) => handleSubmit(e, "activar")}
-                >
-                    <FontAwesomeIcon icon={faCheck} />
-                    Activar
-                </button>
-
-                <button
-                    className="bg-custom-red w-full p-3 text-white font-bold rounded-lg hover:bg-custom-dark-red transition-all flex items-center justify-center gap-2"
-                    onClick={(e) => handleSubmit(e, "desactivar")}
-                >
-                    <FontAwesomeIcon icon={faMinus} />
-                    Desactivar
-                </button>
+                <button onClick={handleAgregar} className="bg-blue-600 text-white p-3 rounded-lg"><FontAwesomeIcon icon={faPlus} /> Agregar</button>
+                <button onClick={handleActualizar} className="bg-yellow-500 text-white p-3 rounded-lg"><FontAwesomeIcon icon={faPen} /> Actualizar</button>
+                <button onClick={handleActivar} className="bg-green-600 text-white p-3 rounded-lg"><FontAwesomeIcon icon={faCheck} /> Activar</button>
+                <button onClick={handleDesactivar} className="bg-red-600 text-white p-3 rounded-lg"><FontAwesomeIcon icon={faMinus} /> Desactivar</button>
             </div>
         </form>
     );

@@ -9,9 +9,6 @@ import AdministradorIcon from "../assets/PRODUCCION.png"
 
 const VisualizarAdministrador = () => {
 
-    const { auth } = useContext(AuthContext)
-
-    const { modal, handleModal, tratamientos, setTratamientos } = useContext(TratamientosContext)
     const navigate = useNavigate()
     const { id } = useParams()
     const [administrador, setadministrador] = useState({})
