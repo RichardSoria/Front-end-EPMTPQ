@@ -81,7 +81,7 @@ export const FormularioRuta = () => {
             const confirmacion = window.confirm("¿Estás seguro de actualizar esta ruta?");
             if (confirmacion) {
                 const token = localStorage.getItem("token");
-                const url = `${import.meta.env.VITE_BACKEND_URL}/ruta/${rutaSeleccionada._id}`;
+                const url = `${import.meta.env.VITE_BACKEND_URL}/ruta/actualizar/${rutaSeleccionada._id}`;
                 const options = {
                     headers: {
                         "Content-Type": "application/json",
