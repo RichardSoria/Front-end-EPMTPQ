@@ -168,22 +168,22 @@ export const FormularioRuta = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="mb-4">
                     <label className="text-gray-700 uppercase font-bold text-sm">Nombre:</label>
-                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md" name="nombre" value={form.nombre} onChange={handleChange} />
+                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md" name="nombre" value={form.nombre} onChange={handleChange} placeholder="Nombre de la ruta"/>
                 </div>
 
                 <div className="mb-4">
                     <label className="text-gray-700 uppercase font-bold text-sm">Recorrido:</label>
-                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md" name="recorrido" value={form.recorrido} onChange={handleChange} />
+                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md" name="recorrido" value={form.recorrido} onChange={handleChange} placeholder="Recorrido de la ruta"/>
                 </div>
 
                 <div className="mb-4">
                     <label className="text-gray-700 uppercase font-bold text-sm">Horario:</label>
-                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md" name="horario" value={form.horario} onChange={handleChange} />
+                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md" name="horario" value={form.horario} onChange={handleChange} placeholder="Horario de la ruta"/>
                 </div>
 
                 <div className="mb-4">
                     <label className="text-gray-700 uppercase font-bold text-sm">Sentido:</label>
-                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md" name="sentido" value={form.sentido} onChange={handleChange} />
+                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md" name="sentido" value={form.sentido} onChange={handleChange} placeholder="Sentido de la ruta"/>
                 </div>
             </div>
 

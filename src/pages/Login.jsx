@@ -87,7 +87,7 @@ const Login = () => {
                         <form onSubmit={handleSubmit} className="mt-4">
                             <div className="mb-3">
                                 <label className="mb-2 block text-base font-semibold">Correo Electrónico</label>
-                                <input type="email" name="email" placeholder="Ingrese su correo"
+                                <input type="email" name="email" placeholder="Ingrese su correo electrónico"
                                     value={form.email || ""} onChange={handleChange}
                                     className="w-full rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500 py-2 px-3" />
                             </div>

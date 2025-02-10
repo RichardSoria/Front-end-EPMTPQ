@@ -166,22 +166,22 @@ export const FormularioParada = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="mb-4">
                     <label className="text-gray-700 uppercase font-bold text-sm">Nombre:</label>
-                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md" name="nombre" value={form.nombre} onChange={handleChange} />
+                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md" name="nombre" value={form.nombre} onChange={handleChange} placeholder="Nombre de la parada"/>
                 </div>
 
                 <div className="mb-4">
                     <label className="text-gray-700 uppercase font-bold text-sm">Tipo:</label>
-                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md" name="tipo" value={form.tipo} onChange={handleChange} />
+                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md" name="tipo" value={form.tipo} onChange={handleChange} placeholder="Tipo de parada"/>
                 </div>
 
                 <div className="mb-4">
                     <label className="text-gray-700 uppercase font-bold text-sm">Ubicación:</label>
-                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md" name="ubicacion" value={form.ubicacion} onChange={handleChange} />
+                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md" name="ubicacion" value={form.ubicacion} onChange={handleChange} placeholder="Ubicación de la parada"/>
                 </div>
 
                 <div className="mb-4">
                     <label className="text-gray-700 uppercase font-bold text-sm">ID de Parada:</label>
-                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md bg-gray-200 text-gray-500 cursor-not-allowed" name="_id" value={form._id} onChange={handleChange} readOnly />
+                    <input type="text" className="border-2 w-full p-3 mt-1 rounded-md bg-gray-200 text-gray-500 cursor-not-allowed" name="_id" value={form._id} onChange={handleChange} readOnly placeholder="ID de la parada"/>
                 </div>
             </div>
 
