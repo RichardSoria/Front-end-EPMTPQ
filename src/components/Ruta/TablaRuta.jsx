@@ -1,13 +1,18 @@
 import { useContext } from "react";
+import { useParams } from "react-router-dom";
 import Mensaje from "../Alertas/Mensaje";
 import RutaContext from "../../context/RutaProvider";
 
 const TablaRuta = () => {
     const { rutas, setRutaSeleccionada } = useContext(RutaContext);
+    const { id } = useParams(); // Obtener el id del corredor desde la URL
+
+    // Filtrar rutas que pertenecen al corredor actual
+    const rutasFiltradas = rutas.filter(ruta => ruta.corredor === id);
 
     return (
         <>
-            {rutas.length === 0 ? (
+            {rutasFiltradas.length === 0 ? (
                 <Mensaje tipo={'active'}>{'No existen registros'}</Mensaje>
             ) : (
                 <div className="overflow-x-auto">
@@ -22,7 +27,7 @@ const TablaRuta = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {rutas.map((ruta, index) => (
+                            {rutasFiltradas.map((ruta, index) => (
                                 <tr
                                     key={ruta._id}
                                     className={`text-center border-t-2 border-b-2 font-bold hover:bg-blue-300 hover:text-blue-700 ${

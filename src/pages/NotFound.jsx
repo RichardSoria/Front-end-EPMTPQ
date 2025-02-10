@@ -1,4 +1,5 @@
 import logoDog from '../assets/Quito-e-Galapagos-Basico-4.webp'
+import LogoQuito from '../../public/images/logo_quito_transporte.png'
 import {Link} from 'react-router-dom'
 
 
@@ -7,7 +8,7 @@ export const NotFound = () => {
         
 
         <div className="flex flex-col items-center justify-center">
-            <img className="w-96 mx-auto mb-4" src="/public/images/logo_quito_transporte.png" />
+            <img className="w-96 mx-auto mb-4" src={LogoQuito} />
             <img class="object-cover h-80 w-80 rounded-full border-4 border-solid border-custom-blue" src={logoDog} alt="image description"/>
 
             <div className="flex flex-col items-center justify-center">
