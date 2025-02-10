@@ -16,7 +16,7 @@ export const NotFound = () => {
                 
                 <p className="md:text-lg lg:text-xl text-gray-600 mt-8">Lo sentimos, la página que intentas acceder no existe.</p>
                 
-                <Link to="/login" className="py-2 w-full m-5 block text-center bg-custom-blue text-white font-bold text-lg rounded-xl hover:scale-105 duration-300 hover:bg-custom-red">Iniciar Sesión</Link>
+                <Link to="/" className="py-2 w-full m-5 block text-center bg-custom-blue text-white font-bold text-lg rounded-xl hover:scale-105 duration-300 hover:bg-custom-red">Iniciar Sesión</Link>
 
             </div>
         </div>
